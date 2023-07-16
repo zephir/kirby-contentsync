@@ -27,17 +27,17 @@ The recommended way of installing is by using Composer.
 ### 1.1 Composer
 
 ```
-composer require zephir/kirby-cookieconsent
+composer require zephir/kirby-contentsync
 ```
 
 ### 1.2 Download
 
-Download and copy this repository to `/site/plugins/kirby-cookieconsent`.
+Download and copy this repository to `/site/plugins/kirby-contentsync`.
 
 ### 1.3 Git submodule
 
 ```
-git submodule add https://github.com/zephir/kirby-cookieconsent.git site/plugins/kirby-cookieconsent
+git submodule add https://github.com/zephir/kirby-contentsync.git site/plugins/kirby-contentsync
 ```
 
 ## 2. Setup
