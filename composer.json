@@ -1,0 +1,28 @@
+{
+    "name": "zephir/kirby-contentsync",
+    "description": "Kirby contentsync plugin",
+    "license": "MIT",
+    "type": "kirby-plugin",
+    "version": "1.0.0",
+    "authors": [
+        {
+            "name": "Marc Stampfli",
+            "email": "marc@zephir.ch"
+        }
+    ],
+    "require": {
+        "getkirby/composer-installer": "^1.2",
+        "getkirby/cli": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Zephir\\Contentsync\\": "src/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "getkirby/composer-installer": true
+        }
+    }
+}
