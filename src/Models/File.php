@@ -119,6 +119,7 @@ class File
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, option('zephir.contentsync.source') . '/contentsync/file/' . $this->id);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . option('zephir.contentsync.token')));
         curl_setopt($ch, CURLOPT_FILE, $fp);
 
         $response = curl_exec($ch);

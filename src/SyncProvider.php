@@ -98,6 +98,7 @@ class SyncProvider
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, option('zephir.contentsync.source') . '/contentsync/files');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . option('zephir.contentsync.token')));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
         $response = curl_exec($ch);
