@@ -140,7 +140,7 @@ class SyncProvider
             ]);
         }
 
-        return $curl->response;
+        return base64_decode(trim($curl->response));
     }
 
 }
