@@ -2,6 +2,7 @@
 
 namespace Zephir\Contentsync;
 
+use Curl\Curl;
 use Kirby\CLI\CLI;
 use Kirby\Exception\Exception;
 use Zephir\Contentsync\Collections\Files;
@@ -95,15 +96,13 @@ class SyncProvider
     {
         $this->cli->out("Fetching file list from " . option('zephir.contentsync.source'));
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, option('zephir.contentsync.source') . '/contentsync/files');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['token' => option('zephir.contentsync.token')]));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $curl = new Curl();
+        $curl->post(option('zephir.contentsync.source') . '/contentsync/files', [
+            'token' => option('zephir.contentsync.token')
+        ]);
 
-        $response = curl_exec($ch);
-        $response = json_decode($response);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $httpcode = $curl->httpStatusCode;
+        $response = json_decode($curl->response);
 
         if ($response === NULL) {
             throw new Exception('Malformed JSON response from server.');
@@ -125,17 +124,15 @@ class SyncProvider
      */
     private function fetchFileContent(File $file)
     {
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, option('zephir.contentsync.source') . '/contentsync/file/' . $file->id);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['token' => option('zephir.contentsync.token')]));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $curl = new Curl();
+        $curl->post(option('zephir.contentsync.source') . '/contentsync/file/' . $file->id, [
+            'token' => option('zephir.contentsync.token')
+        ]);
 
-        $content = curl_exec($ch);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $httpcode = $curl->httpStatusCode;
 
         if ($httpcode !== 200) {
-            $response = json_decode($content);
+            $response = json_decode($curl->response);
             var_dump($response);
             throw new Exception([
                 'fallback' => 'Server: ' . $response->message . ' in ' . $response->file . ' on line ' . $response->line,
@@ -143,7 +140,7 @@ class SyncProvider
             ]);
         }
 
-        return $content;
+        return $curl->response;
     }
 
 }
