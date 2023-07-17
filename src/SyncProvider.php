@@ -50,7 +50,6 @@ class SyncProvider
 
             if ($deleteCount || $createCount || $updateCount) {
                 $this->cli->confirmToContinue('Do you want to continue?');
-                $this->cli->clear();
             }
 
             // Remove deleted files

@@ -1,5 +1,7 @@
 # Kirby 3 Contentsync plugin
 
+![cover](docs/content-sync.gif)
+
 A Kirby 3 plugin to synchronize your content from a source (usually the server) to your local development environment.
 
 > This plugin requires [Kirby 3](https://getkirby.com), [Kirby 3 CLI](https://github.com/getkirby/cli) and PHP 8 or higher to work.
