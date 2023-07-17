@@ -3,6 +3,7 @@
 namespace Zephir\Contentsync;
 
 use Kirby\Http\Response;
+use Kirby\Filesystem\F;
 use Zephir\Contentsync\Collections\Files;
 
 class FileProvider
@@ -32,7 +33,7 @@ class FileProvider
         $files = new Files();
         $file = $files->getFile($fileId);
 
-        return Response::file($file->getAbsolutePath());
+        return new Response(F::base64($file->getAbsolutePath()), 'text/plain');
     }
 
 }

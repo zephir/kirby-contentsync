@@ -143,7 +143,7 @@ class SyncProvider
             ]);
         }
 
-        return $response->getBody()->getContents();
+        return base64_decode(trim($response->getBody()->getContents()));
     }
 
     /**
