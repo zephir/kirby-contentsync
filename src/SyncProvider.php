@@ -68,7 +68,7 @@ class SyncProvider
                 $progress = $this->cli->progress()->total($createCount);
                 foreach ($fileActions['create'] as $file) {
                     $progress->advance(1, "Creating {{$file->kirbyRootName}}/.../{$file->getFilename()}");
-                    $file->update($this->fetchFileContent($file));
+                    $file->update();
                 }
                 $progress->current($createCount, 'All files created.');
             }
@@ -78,7 +78,7 @@ class SyncProvider
                 $progress = $this->cli->progress()->total($updateCount);
                 foreach ($fileActions['update'] as $file) {
                     $progress->advance(1, "Updating {{$file->kirbyRootName}}/.../{$file->getFilename()}");
-                    $file->update($this->fetchFileContent($file));
+                    $file->update();
                 }
                 $progress->current($updateCount, 'All files updated.');
             }
@@ -96,64 +96,26 @@ class SyncProvider
     {
         $this->cli->out("Fetching file list from " . option('zephir.contentsync.source'));
 
-        $client = $this->getGuzzleClient();
-        $response = $client->get('/contentsync/files', [
-            'headers' => [
-                'Authorization' => 'Bearer ' . option('zephir.contentsync.token')
-            ]
-        ]);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, option('zephir.contentsync.source') . '/contentsync/files');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-        $content = json_decode($response->getBody()->getContents());
-        $statusCode = $response->getStatusCode();
+        $response = curl_exec($ch);
+        $response = json_decode($response);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        if ($content === NULL) {
+        if ($response === NULL) {
             throw new Exception('Malformed JSON response from server.');
         }
-        if ($statusCode !== 200) {
+        if ($httpcode !== 200) {
             throw new Exception([
-                'fallback' => 'Server: ' . $content->message . ' in ' . $content->file . ' on line ' . $content->line,
-                'httpCode' => $statusCode
+                'fallback' => 'Server: ' . $response->message . ' in ' . $response->file . ' on line ' . $response->line,
+                'httpCode' => $httpcode
             ]);
         }
 
         $files = new Files();
-        return $files->setFiles($content);
-    }
-
-    /**
-     * @param File $file
-     * @return string
-     */
-    private function fetchFileContent(File $file)
-    {
-        $client = $this->getGuzzleClient();
-        $response = $client->get('/contentsync/file/' . $file->id, [
-            'headers' => [
-                'Authorization' => 'Bearer ' . option('zephir.contentsync.token')
-            ]
-        ]);
-
-        $statusCode = $response->getStatusCode();
-
-        if ($statusCode !== 200) {
-            $content = json_decode($response->getBody()->getContents());
-            throw new Exception([
-                'fallback' => 'Server: ' . $content->message . ' in ' . $content->file . ' on line ' . $content->line,
-                'httpCode' => $statusCode
-            ]);
-        }
-
-        return base64_decode(trim($response->getBody()->getContents()));
-    }
-
-    /**
-     * @return Client
-     */
-    private function getGuzzleClient()
-    {
-        return new Client([
-            'base_uri' => option('zephir.contentsync.source')
-        ]);
+        return $files->setFiles($response);
     }
 
 }
