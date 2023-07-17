@@ -32,7 +32,7 @@ class FileProvider
         $files = new Files();
         $file = $files->getFile($fileId);
 
-        return new Response(base64_encode(file_get_contents($file->getAbsolutePath())));
+        return Response::file($file->getAbsolutePath());
     }
 
 }

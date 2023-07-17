@@ -13,7 +13,7 @@ class AuthProvider
      * @throws Exception
      * @throws PermissionException
      */
-    public static function validate(string $token)
+    public static function validate()
     {
         $validToken = option('zephir.contentsync.token');
 
@@ -21,7 +21,15 @@ class AuthProvider
             throw new Exception('No token configured.');
         }
 
-        if (option('zephir.contentsync.token') !== $token) {
+        $headers = getallheaders();
+
+        if (!isset($headers['Authorization'])) {
+            throw new Exception('Authorization header missing.');
+        }
+
+        $token = substr($headers['Authorization'], 7);
+
+        if ($validToken !== $token) {
             throw new Exception([
                 'fallback' => 'Invalid token.',
                 'httpCode' => 403,

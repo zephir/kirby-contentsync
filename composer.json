@@ -13,7 +13,7 @@
     "require": {
         "getkirby/composer-installer": "^1.2",
         "getkirby/cli": "^1.1",
-        "php-curl-class/php-curl-class": "^9.17"
+        "guzzlehttp/guzzle": "^7.7"
     },
     "autoload": {
         "psr-4": {

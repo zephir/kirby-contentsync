@@ -15,10 +15,10 @@ Kirby::plugin('zephir/contentsync', [
         return [
             [
                 'pattern' => 'contentsync/files',
-                'method' => 'POST',
+                'method' => 'GET',
                 'action' => function () {
                     try {
-                        AuthProvider::validate($_POST['token']);
+                        AuthProvider::validate();
                         return FileProvider::fileList();
                     } catch (Exception $e) {
                         return Response::json($e->toArray(), $e->getHttpCode());
@@ -27,10 +27,10 @@ Kirby::plugin('zephir/contentsync', [
             ],
             [
                 'pattern' => 'contentsync/file/(:any)',
-                'method' => 'POST',
+                'method' => 'GET',
                 'action' => function (string $fileId) {
                     try {
-                        AuthProvider::validate($_POST['token']);
+                        AuthProvider::validate();
                         return FileProvider::fileDownload($fileId);
                     } catch (Exception $e) {
                         var_dump($e);
@@ -60,7 +60,7 @@ Kirby::plugin('zephir/contentsync', [
     ],
     'options' => [
         'source' => null,
-        'token' => null,
+        'token' => 'abc',
         'enabledRoots' => [
             'content' => true,
             'accounts' => true

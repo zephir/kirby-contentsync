@@ -2,7 +2,7 @@
 
 namespace Zephir\Contentsync;
 
-use Curl\Curl;
+use GuzzleHttp\Client;
 use Kirby\CLI\CLI;
 use Kirby\Exception\Exception;
 use Zephir\Contentsync\Collections\Files;
@@ -96,26 +96,28 @@ class SyncProvider
     {
         $this->cli->out("Fetching file list from " . option('zephir.contentsync.source'));
 
-        $curl = new Curl();
-        $curl->post(option('zephir.contentsync.source') . '/contentsync/files', [
-            'token' => option('zephir.contentsync.token')
+        $client = $this->getGuzzleClient();
+        $response = $client->get('/contentsync/files', [
+            'headers' => [
+                'Authorization' => 'Bearer ' . option('zephir.contentsync.token')
+            ]
         ]);
 
-        $httpcode = $curl->httpStatusCode;
-        $response = json_decode($curl->response);
+        $content = json_decode($response->getBody()->getContents());
+        $statusCode = $response->getStatusCode();
 
-        if ($response === NULL) {
+        if ($content === NULL) {
             throw new Exception('Malformed JSON response from server.');
         }
-        if ($httpcode !== 200) {
+        if ($statusCode !== 200) {
             throw new Exception([
-                'fallback' => 'Server: ' . $response->message . ' in ' . $response->file . ' on line ' . $response->line,
-                'httpCode' => $httpcode
+                'fallback' => 'Server: ' . $content->message . ' in ' . $content->file . ' on line ' . $content->line,
+                'httpCode' => $statusCode
             ]);
         }
 
         $files = new Files();
-        return $files->setFiles($response);
+        return $files->setFiles($content);
     }
 
     /**
@@ -124,23 +126,34 @@ class SyncProvider
      */
     private function fetchFileContent(File $file)
     {
-        $curl = new Curl();
-        $curl->post(option('zephir.contentsync.source') . '/contentsync/file/' . $file->id, [
-            'token' => option('zephir.contentsync.token')
+        $client = $this->getGuzzleClient();
+        $response = $client->get('/contentsync/file/' . $file->id, [
+            'headers' => [
+                'Authorization' => 'Bearer ' . option('zephir.contentsync.token')
+            ]
         ]);
 
-        $httpcode = $curl->httpStatusCode;
+        $statusCode = $response->getStatusCode();
 
-        if ($httpcode !== 200) {
-            $response = json_decode($curl->response);
-            var_dump($response);
+        if ($statusCode !== 200) {
+            $content = json_decode($response->getBody()->getContents());
             throw new Exception([
-                'fallback' => 'Server: ' . $response->message . ' in ' . $response->file . ' on line ' . $response->line,
-                'httpCode' => $httpcode
+                'fallback' => 'Server: ' . $content->message . ' in ' . $content->file . ' on line ' . $content->line,
+                'httpCode' => $statusCode
             ]);
         }
 
-        return base64_decode(trim($curl->response));
+        return $response->getBody()->getContents();
+    }
+
+    /**
+     * @return Client
+     */
+    private function getGuzzleClient()
+    {
+        return new Client([
+            'base_uri' => option('zephir.contentsync.source')
+        ]);
     }
 
 }
