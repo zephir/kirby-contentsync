@@ -12,8 +12,7 @@
     ],
     "require": {
         "getkirby/composer-installer": "^1.2",
-        "getkirby/cli": "^1.1",
-        "guzzlehttp/guzzle": "^7.7"
+        "getkirby/cli": "^1.1"
     },
     "autoload": {
         "psr-4": {

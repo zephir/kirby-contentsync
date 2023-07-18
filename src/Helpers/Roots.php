@@ -1,14 +1,9 @@
 <?php
 
-namespace Zephir\Contentsync\Collections;
+namespace Zephir\Contentsync\Helpers;
 
 class Roots
 {
-
-    /**
-     * @var array
-     */
-    private static $allowedKirbyRoots = ['content', 'accounts'];
 
     /**
      * @return array
@@ -18,8 +13,7 @@ class Roots
         $enabledRoots = option('zephir.contentsync.enabledRoots');
         $roots = [];
 
-        foreach (self::$allowedKirbyRoots as $rootName) {
-            $root = kirby()->root($rootName);
+        foreach (kirby()->roots()->toArray() as $rootName => $root) {
             if (isset($enabledRoots[$rootName]) && $enabledRoots[$rootName] === true) {
                 $roots[$rootName] = $root;
             }

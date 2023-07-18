@@ -33,7 +33,6 @@ Kirby::plugin('zephir/contentsync', [
                         AuthProvider::validate();
                         return FileProvider::fileDownload($fileId);
                     } catch (Exception $e) {
-                        var_dump($e);
                         return Response::json($e->toArray(), $e->getHttpCode());
                     }
                 }
@@ -60,10 +59,11 @@ Kirby::plugin('zephir/contentsync', [
     ],
     'options' => [
         'source' => null,
-        'token' => null,
+        'token' => 'abc',
         'enabledRoots' => [
             'content' => true,
-            'accounts' => true
+            'accounts' => true,
+            'license' => true
         ]
     ]
 ]);

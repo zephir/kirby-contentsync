@@ -44,21 +44,21 @@ git submodule add https://github.com/zephir/kirby-contentsync.git site/plugins/k
 
 ## 2. Setup
 
-After installation, you need to add the plugin options to your config.
+After installation, you simply have to configure the [Options](#3-options), deploy the updated site to the server and use [the Kirby command](#4-usage).
 
 ## 3. Options
 
-| Option       | Type   | Default                       | Required | Description                                                                                                                                      |
-| ------------ | ------ | ----------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| source       | string | null                          | ✅       | Source of the content, normally the staging / prod server. URL of the host (e.g. https://getkirby.com)                                           |
-| token        | string | null                          | ✅       | The authentication token, make sure this token is not accessible by the public. Either use an env file/variable or use a private git repository. |
-| enabledRoots | array  | [see below](#31-enabledroots) | ❌       | The authentication token, make sure this token is not accessible by the public. Either use an env file/variable or use a private git repository. |
+| Option       | Type   | Default                       | Required | Description                                                                                                                                                                          |
+| ------------ | ------ | ----------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| source       | string | null                          | ✅       | Source of the content, normally the staging / prod server. URL of the host (e.g. https://getkirby.com)                                                                               |
+| token        | string | null                          | ✅       | The authentication token, make sure this token is not accessible by the public. Either use an env file/variable or use a private git repository.                                     |
+| enabledRoots | array  | [see below](#31-enabledroots) | ❌       | Which roots should be synchronized by the plugin. You can see all [available roots here.](https://getkirby.com/docs/guide/configuration#custom-folder-setup__all-configurable-roots) |
 
 ### 3.1 enabledRoots
 
-The plugin supports synchronizing the `accounts' and `content' folders. To support different types of folder structures we use the `kirby()->roots()` function (hence the name of the option). You can enable/disable either the `accounts` or `content` roots.
-
-Default:
+To support different types of folder structures we use the `kirby()->roots()` function (hence the name of the option).
+The plugin supports synchronizing all kirby root paths.
+By default the plugin is configured to sync the `accounts` and `content` roots.
 
 ```php
 [
@@ -73,16 +73,15 @@ Default:
 'zephir.contentsync' => [
     'source' => 'https://getkirby.com',
     'token' => 'abc123',
-    'enabledRoots' => [ // Default, not required
-        'accounts' => true,
-        'content' => true
+    'enabledRoots' => [
+        'license' => true // also sync license
     ]
 ]
 ```
 
 ## 4. Usage
 
-After installing, setting up options, and deploying the changes to the server, you can simply run the kirby command:
+Kirby CLI Command:
 
 `kirby content:sync`
 
@@ -105,6 +104,7 @@ It doesn't sync files that haven't changed.
 
 1. Since we download each file individually, it is possible that a WAF / Firewall will block the requests. You can add an exception for the endpoints.
 2. Generating the checksum can put a bit of load on the server, especially for large files. But for "normal" websites it should be fine - even if you have several gigabytes of data / many files.
+3. Because we serve all files through PHP and a web endpoint, downloads of large files (200MB+) may be stopped by the server hoster (especially with shared hosting).
 
 ## License
 

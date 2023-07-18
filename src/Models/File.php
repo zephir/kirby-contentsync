@@ -36,7 +36,7 @@ class File
      */
     public function __construct($kirbyRootName, $absolutePath, $checksum = null)
     {
-        $path = str_replace(kirby()->roots()->{$kirbyRootName}, '', $absolutePath);
+        $path = str_replace(kirby()->root($kirbyRootName), '', $absolutePath);
         $this->id = sha1($kirbyRootName . $path);
         $this->path = $path;
         $this->kirbyRootName = $kirbyRootName;
@@ -50,7 +50,7 @@ class File
     {
         return A::join(
             [
-                kirby()->roots()->{$this->kirbyRootName},
+                kirby()->root($this->kirbyRootName),
                 $this->path
             ],
             ''
@@ -122,16 +122,17 @@ class File
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . option('zephir.contentsync.token')));
         curl_setopt($ch, CURLOPT_FILE, $fp);
 
-        $response = curl_exec($ch);
+        curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         curl_close($ch);
         fclose($fp);
 
         if ($httpcode !== 200) {
-            $response = json_decode($response);
+            $response = json_decode(F::read($this->getAbsolutePath()));
+            F::remove($this->getAbsolutePath());
             throw new Exception([
-                'fallback' => 'Server: ' . $response->message . ' in ' . $response->file . ' on line ' . $response->line,
+                'fallback' => 'Server: ' . $response->message,
                 'httpCode' => $httpcode
             ]);
         }

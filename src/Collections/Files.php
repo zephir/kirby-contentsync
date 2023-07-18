@@ -4,7 +4,7 @@ namespace Zephir\Contentsync\Collections;
 
 use Kirby\Toolkit\A;
 use Kirby\Filesystem\Dir;
-use Zephir\Contentsync\Collections\Roots;
+use Zephir\Contentsync\Helpers\Roots;
 use Zephir\Contentsync\Models\File;
 
 class Files
@@ -36,7 +36,15 @@ class Files
         $files = [];
 
         foreach (Roots::getEnabled() as $kirbyRootName => $rootPath) {
-            $files = A::merge($files, $this->collectFilesForRoot($kirbyRootName, $rootPath, $generateChecksum));
+            if (is_dir($rootPath)) {
+                $files = A::merge($files, $this->collectFilesForRoot($kirbyRootName, $rootPath, $generateChecksum));
+            } else if (is_file($rootPath)) {
+                $file = new File($kirbyRootName, $rootPath);
+                if ($generateChecksum) {
+                    $file->generateChecksum();
+                }
+                $files[] = $file;
+            }
         }
 
         $this->all = $files;

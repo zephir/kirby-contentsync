@@ -109,7 +109,7 @@ class SyncProvider
         }
         if ($httpcode !== 200) {
             throw new Exception([
-                'fallback' => 'Server: ' . $response->message . ' in ' . $response->file . ' on line ' . $response->line,
+                'fallback' => 'Server: ' . $response->message,
                 'httpCode' => $httpcode
             ]);
         }

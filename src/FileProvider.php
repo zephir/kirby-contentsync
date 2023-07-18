@@ -48,7 +48,8 @@ class FileProvider
      */
     private static function returnFileStream($file)
     {
-        Header::contentType(F::extensionToMime(F::extension($file->getAbsolutePath())));
+        $mime = F::extensionToMime(F::extension($file->getAbsolutePath())) ?? 'text/plain';
+        Header::contentType($mime);
 
         $buffer = '';
         $handle = fopen($file->getAbsolutePath(), 'rb');
