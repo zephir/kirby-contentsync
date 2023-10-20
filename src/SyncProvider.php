@@ -100,22 +100,25 @@ class SyncProvider
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . option('zephir.contentsync.token')));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
+        var_dump(option('zephir.contentsync.source') . '/contentsync/files');
+        var_dump('Authorization: Bearer ' . option('zephir.contentsync.token'));
+
         $response = curl_exec($ch);
-        $response = json_decode($response);
+        $parsedResponse = json_decode($response);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        if ($response === NULL) {
-            throw new Exception('Malformed JSON response from server.');
+        if ($parsedResponse === NULL) {
+            throw new Exception('Malformed JSON response from server. HTTP-Code: ' . $httpcode . '. Response:' . $response);
         }
         if ($httpcode !== 200) {
             throw new Exception([
-                'fallback' => 'Server: ' . $response->message,
+                'fallback' => 'Server: ' . $parsedResponse->message,
                 'httpCode' => $httpcode
             ]);
         }
 
         $files = new Files();
-        return $files->setFiles($response);
+        return $files->setFiles($parsedResponse);
     }
 
 }

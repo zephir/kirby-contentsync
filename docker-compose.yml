@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  cs_server:
+    build:
+      context: ./docker
+    environment:
+      - USERID=${UID}
+    volumes:
+      - ./docker/config.php:/var/www/html/site/config/config.php
+      - ./:/var/www/html/site/plugins/kirby-contentsync
+    ports:
+      - 8888:80
+    healthcheck:
+      disable: true
+
+  cs_receiver:
+    build:
+      context: ./docker
+    environment:
+      - USERID=${UID}
+    volumes:
+      - ./docker/config.php:/var/www/html/site/config/config.php
+      - ./docker/receiver/content:/var/www/html/content
+      - ./:/var/www/html/site/plugins/kirby-contentsync
+    ports:
+      - 9999:80
+    healthcheck:
+      disable: true
