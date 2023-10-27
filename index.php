@@ -31,7 +31,10 @@ Kirby::plugin('zephir/contentsync', [
                 'action' => function (string $fileId) {
                     try {
                         AuthProvider::validate();
-                        return FileProvider::fileDownload($fileId);
+                        FileProvider::fileDownload($fileId);
+                        // Not really a nice solution, but we need to exit before
+                        // kirby tries to set headers
+                        exit;
                     } catch (Exception $e) {
                         return Response::json($e->toArray(), $e->getHttpCode());
                     }
@@ -41,7 +44,7 @@ Kirby::plugin('zephir/contentsync', [
     },
     'commands' => [
         'content:sync' => [
-            'description' => 'Sync all content.',
+            'description' => 'Sync content.',
             'args' => [
                 'debug' => [
                     'prefix' => 'd',

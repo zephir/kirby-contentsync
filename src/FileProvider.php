@@ -31,7 +31,7 @@ class FileProvider
 
     /**
      * @param string $fileId
-     * @return Response
+     * @return void
      */
     public static function fileDownload(string $fileId)
     {
@@ -40,7 +40,6 @@ class FileProvider
 
         ob_clean();
         self::returnFileStream($file);
-        return new Response('');
     }
 
     /**
