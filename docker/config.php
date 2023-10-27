@@ -10,7 +10,7 @@
 return [
     'debug' => true,
     'zephir.contentsync' => [
-        'source' => 'http://cs_server',
+        'source' => 'http://cs_server/',
         'token' => 'abc123',
         'enabledRoots' => [
             'license' => true // also sync license

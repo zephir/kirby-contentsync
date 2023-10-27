@@ -93,15 +93,14 @@ class SyncProvider
      */
     private function fetchFiles()
     {
-        $this->cli->out("Fetching file list from " . option('zephir.contentsync.source'));
+        $source = rtrim(option('zephir.contentsync.source'), '/');
+
+        $this->cli->out("Fetching file list from " . $source);
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, option('zephir.contentsync.source') . '/contentsync/files');
+        curl_setopt($ch, CURLOPT_URL, $source . '/contentsync/files');
         curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . option('zephir.contentsync.token')));
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-        var_dump(option('zephir.contentsync.source') . '/contentsync/files');
-        var_dump('Authorization: Bearer ' . option('zephir.contentsync.token'));
 
         $response = curl_exec($ch);
         $parsedResponse = json_decode($response);
