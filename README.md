@@ -1,15 +1,15 @@
-# Kirby 3 Contentsync plugin
+# Kirby Contentsync plugin
 
 ![cover](docs/content-sync.gif)
 
 Tired of manual and cumbersome methods like git push/pull, scp, rsync or sftp to synchronize content between your server and local development environment?<br />
 Embrace a seamless and efficient syncing solution with Contentsync.
 
-> This plugin requires [Kirby 3](https://getkirby.com), [Kirby 3 CLI](https://github.com/getkirby/cli) and PHP 8 or higher to work.
+> This plugin requires [Kirby 3/4](https://getkirby.com), [Kirby CLI](https://github.com/getkirby/cli) and PHP 8 or higher to work.
 
 ## Table of Contents
 
-- [Kirby 3 Contentsync plugin](#kirby-3-contentsync-plugin)
+- [Kirby Contentsync plugin](#kirby-contentsync-plugin)
   - [Table of Contents](#table-of-contents)
   - [1. Installation](#1-installation)
     - [1.1 Composer](#11-composer)
@@ -20,8 +20,10 @@ Embrace a seamless and efficient syncing solution with Contentsync.
     - [3.1 enabledRoots](#31-enabledroots)
     - [3.2 Example config entry](#32-example-config-entry)
   - [4. Usage](#4-usage)
-  - [5. How does it work](#5-how-does-it-work)
+  - [5. How does it work?](#5-how-does-it-work)
   - [6. Caveats](#6-caveats)
+  - [License](#license)
+  - [Credits](#credits)
 
 ## 1. Installation
 
