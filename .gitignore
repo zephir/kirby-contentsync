@@ -6,6 +6,10 @@
 
 # temp files
 .parcel-cache
+docker/receiver/content/*
+
+# kirby
+kirby/
 
 # files of Composer dependencies that are not needed for the plugin
 /vendor

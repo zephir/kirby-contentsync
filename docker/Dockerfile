@@ -40,6 +40,8 @@ RUN rm /var/www/html/*
 
 # Clone the Kirby Starterkit
 RUN git clone --depth 1 https://github.com/getkirby/starterkit.git /var/www/html
+RUN rm -rf /var/www/html/kirby
+RUN git clone --depth 1 --branch 4.0.0-beta.2 https://github.com/getkirby/kirby.git /var/www/html/kirby
 
 # Fix files and directories ownership
 RUN chown -R www-data:www-data /var/www/html/
