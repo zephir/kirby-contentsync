@@ -2,10 +2,12 @@
 
 namespace Zephir\Contentsync\Models;
 
+use Curl\Curl;
 use Kirby\Exception\Exception;
 use Kirby\Filesystem\Dir;
 use Kirby\Filesystem\F;
 use Kirby\Toolkit\A;
+use Zephir\Contentsync\Helpers\Logger;
 
 class File
 {
@@ -112,29 +114,36 @@ class File
      */
     public function update()
     {
+        $source = rtrim(option('zephir.contentsync.source'), '/');
+
         // Check if dir exists and create if not
         Dir::make(F::dirname($this->getAbsolutePath()));
 
-        $fp = fopen($this->getAbsolutePath(), 'w');
+        Logger::verbose('File: ' . $this->getAbsolutePath());
+        Logger::verbose('File ID: ' . $this->id);
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, option('zephir.contentsync.source') . '/contentsync/file/' . $this->id);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . option('zephir.contentsync.token')));
-        curl_setopt($ch, CURLOPT_FILE, $fp);
+        $fileUrl = $source . '/contentsync/file/' . $this->id;
+        Logger::verbose('Server URL: ' . $fileUrl);
 
-        curl_exec($ch);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl = new Curl();
+        $curl->setHeader('Authorization', 'Bearer ' . option('zephir.contentsync.token'));
+        $curl->download(
+            $fileUrl,
+            $this->getAbsolutePath()
+        );
 
-        curl_close($ch);
-        fclose($fp);
-
-        if ($httpcode !== 200) {
+        if ($curl->httpStatusCode !== 200) {
             $response = json_decode(F::read($this->getAbsolutePath()));
+            $errorMessage = $curl->errorMessage;
+
+            if (is_object($response)) {
+                $errorMessage = $response->message;
+            }
+
             F::remove($this->getAbsolutePath());
-            throw new Exception([
-                'fallback' => 'Server: ' . $response->message,
-                'httpCode' => $httpcode
-            ]);
+            Logger::verbose('Removing: ' . $this->getAbsolutePath());
+
+            throw new Exception('Server: ' . $errorMessage . '\n' . ' Tried to connect to: ' . $source . '/contentsync/file/' . $this->id);
         }
     }
 

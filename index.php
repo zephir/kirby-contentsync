@@ -8,6 +8,7 @@ use Kirby\Exception\Exception;
 use Kirby\Http\Response;
 use Zephir\Contentsync\AuthProvider;
 use Zephir\Contentsync\FileProvider;
+use Zephir\Contentsync\Helpers\Logger;
 use Zephir\Contentsync\SyncProvider;
 
 Kirby::plugin('zephir/contentsync', [
@@ -46,23 +47,25 @@ Kirby::plugin('zephir/contentsync', [
         'content:sync' => [
             'description' => 'Sync content.',
             'args' => [
-                'debug' => [
-                    'prefix' => 'd',
-                    'longPrefix' => 'debug',
-                    'description' => 'Show debug informations.',
-                    'defaultValue' => 0,
-                    'castTo' => 'bool'
+                'verbose' => [
+                    'prefix' => 'v',
+                    'longPrefix' => 'verbose',
+                    'description' => 'Verbose output.',
+                    'noValue' => true
                 ]
             ],
-            'command' => function ($cli) {
-                $syncProvider = new SyncProvider($cli, $cli->arg('debug'));
+            'command' => function ($cli) : void {
+                Logger::setCli($cli);
+                Logger::setLogLevel($cli->arg('verbose') ? 'verbose' : 'info');
+
+                $syncProvider = new SyncProvider($cli);
                 $syncProvider->sync();
             }
         ]
     ],
     'options' => [
         'source' => null,
-        'token' => 'abc',
+        'token' => null,
         'enabledRoots' => [
             'content' => true,
             'accounts' => true,

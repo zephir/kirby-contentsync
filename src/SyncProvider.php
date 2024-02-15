@@ -2,11 +2,11 @@
 
 namespace Zephir\Contentsync;
 
-use GuzzleHttp\Client;
+use Curl\Curl;
 use Kirby\CLI\CLI;
 use Kirby\Exception\Exception;
 use Zephir\Contentsync\Collections\Files;
-use Zephir\Contentsync\Models\File;
+use Zephir\Contentsync\Helpers\Logger;
 
 class SyncProvider
 {
@@ -15,76 +15,78 @@ class SyncProvider
      */
     private $cli;
 
-    private $debug;
-
     /**
      * @param CLI $cli
      */
-    public function __construct(CLI $cli, $debug = false)
+    public function __construct(CLI $cli)
     {
         $this->cli = $cli;
-        $this->debug = $debug;
     }
 
     public function sync()
     {
-        $this->cli->out('Starting sync process.');
+        Logger::info('Starting sync process.');
 
         try {
+            Logger::verbose('Collecting list of all local files.');
             $localFiles = new Files();
             $localFiles->collectFiles();
 
+            Logger::verbose('Collecting list of all remote files.');
             $files = $this->fetchFiles();
 
+            Logger::verbose('Comparing local and remote files.');
             $fileActions = $localFiles->compare($files);
-
             $deleteCount = count($fileActions['delete']);
             $createCount = count($fileActions['create']);
             $updateCount = count($fileActions['update']);
 
-            $this->cli->br();
-            $this->cli->backgroundLightGray()->out($deleteCount . ' files to <red>delete</red>.');
-            $this->cli->backgroundLightGray()->out($createCount . ' files to <green>create</green>.');
-            $this->cli->backgroundLightGray()->out($updateCount . ' files to <blue>update</blue>.');
-            $this->cli->br();
+            Logger::br();
+            Logger::getCli()->backgroundLightGray()->out($deleteCount . ' files to <red>delete</red>.');
+            Logger::getCli()->backgroundLightGray()->out($createCount . ' files to <green>create</green>.');
+            Logger::getCli()->backgroundLightGray()->out($updateCount . ' files to <blue>update</blue>.');
+            Logger::br();
 
             if ($deleteCount || $createCount || $updateCount) {
-                $this->cli->confirmToContinue('Do you want to continue?');
+                Logger::getCli()->confirmToContinue('Do you want to continue?');
             }
 
             // Remove deleted files
             if ($deleteCount) {
-                $progress = $this->cli->progress()->total($deleteCount);
+                $progress = Logger::getCli()->progress()->total($deleteCount);
                 foreach ($fileActions['delete'] as $file) {
                     $progress->advance(1, "Deleting {{$file->kirbyRootName}}/.../{$file->getFilename()}");
                     $file->delete();
                 }
                 $progress->current($deleteCount, 'All files deleted.');
             }
+            Logger::verbose('All files to be deleted where deleted.');
 
             // Create new files
             if ($createCount) {
-                $progress = $this->cli->progress()->total($createCount);
+                $progress = Logger::getCli()->progress()->total($createCount);
                 foreach ($fileActions['create'] as $file) {
                     $progress->advance(1, "Creating {{$file->kirbyRootName}}/.../{$file->getFilename()}");
                     $file->update();
                 }
                 $progress->current($createCount, 'All files created.');
             }
+            Logger::verbose('All files to be created where created.');
 
             // Update changed files
             if ($updateCount) {
-                $progress = $this->cli->progress()->total($updateCount);
+                $progress = Logger::getCli()->progress()->total($updateCount);
                 foreach ($fileActions['update'] as $file) {
                     $progress->advance(1, "Updating {{$file->kirbyRootName}}/.../{$file->getFilename()}");
                     $file->update();
                 }
                 $progress->current($updateCount, 'All files updated.');
             }
+            Logger::verbose('All files to be updated where updated.');
 
-            $this->cli->success("Everything is up to date.");
+            Logger::success("Everything is up to date.");
         } catch (\Exception $e) {
-            $this->cli->error($e->getMessage());
+            Logger::error($e->getMessage());
         }
     }
 
@@ -95,29 +97,26 @@ class SyncProvider
     {
         $source = rtrim(option('zephir.contentsync.source'), '/');
 
-        $this->cli->out("Fetching file list from " . $source);
+        Logger::info("Fetching file list from " . $source);
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $source . '/contentsync/files');
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer ' . option('zephir.contentsync.token')));
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $curl = new Curl();
+        $curl->setHeader('Authorization', 'Bearer ' . option('zephir.contentsync.token'));
+        $curl->get($source . '/contentsync/files');
 
-        $response = curl_exec($ch);
-        $parsedResponse = json_decode($response);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        if ($parsedResponse === NULL) {
-            throw new Exception('Malformed JSON response from server. HTTP-Code: ' . $httpcode . '. Response:' . $response);
+        if ($curl->error) {
+            throw new Exception('Server Error (' . $curl->httpStatusCode . '): ' . $curl->errorMessage);
         }
-        if ($httpcode !== 200) {
-            throw new Exception([
-                'fallback' => 'Server: ' . $parsedResponse->message,
-                'httpCode' => $httpcode
-            ]);
+
+        if (!is_array($curl->response)) {
+            throw new Exception('Malformed JSON response from server. HTTP-Code: ' . $curl->httpStatusCode . '. Response:' . $curl->response);
+        }
+
+        if ($curl->httpStatusCode !== 200) {
+            throw new Exception('Server Error (' . $curl->httpStatusCode .  '): ' . isset($curl->response->message) ? $curl->response->message : $curl->response);
         }
 
         $files = new Files();
-        return $files->setFiles($parsedResponse);
+        return $files->setFiles($curl->response);
     }
 
 }

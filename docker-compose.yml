@@ -10,7 +10,7 @@ services:
       - ./docker/config.php:/var/www/html/site/config/config.php
       - ./:/var/www/html/site/plugins/kirby-contentsync
     ports:
-      - 8888:80
+      - 7777:80
     healthcheck:
       disable: true
 
@@ -24,6 +24,6 @@ services:
       - ./docker/receiver/content:/var/www/html/content
       - ./:/var/www/html/site/plugins/kirby-contentsync
     ports:
-      - 9999:80
+      - 7778:80
     healthcheck:
       disable: true
