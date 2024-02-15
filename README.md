@@ -88,6 +88,10 @@ Kirby CLI Command:
 
 `kirby content:sync`
 
+With verbose logging:
+
+`kirby content:sync -v`
+
 ## 5. How does it work?
 
 The plugin creates 2 endpoints (routes):
