@@ -2,7 +2,7 @@
 
 ![cover](docs/content-sync.gif)
 
-Tired of manual and cumbersome methods like git push/pull, scp, rsync or sftp to synchronize content between your server and local development environment?<br />
+Tired of manual and cumbersome methods like git push/pull, scp, rsync, or sftp to synchronize content between your server and local development environment?<br />
 Embrace a seamless and efficient syncing solution with Contentsync.
 
 > This plugin requires [Kirby 3/4](https://getkirby.com), [Kirby CLI](https://github.com/getkirby/cli) and PHP 8 or higher to work.
@@ -47,21 +47,21 @@ git submodule add https://github.com/zephir/kirby-contentsync.git site/plugins/k
 
 ## 2. Setup
 
-After installation, you simply have to configure the [Options](#3-options), deploy the updated site to the server and use [the Kirby command](#4-usage).
+After installation, you simply have to configure the [Options](#3-options), deploy the updated site to the server, and use [the Kirby command](#4-usage).
 
 ## 3. Options
 
 | Option       | Type   | Default                       | Required | Description                                                                                                                                                                          |
 | ------------ | ------ | ----------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| source       | string | null                          | ✅       | Source of the content, normally the staging / prod server. URL of the host (e.g. https://getkirby.com)                                                                               |
+| source       | string | null                          | ✅       | Source of the content, normally the staging/prod server. URL of the host (e.g. https://getkirby.com)                                                                               |
 | token        | string | null                          | ✅       | The authentication token, make sure this token is not accessible by the public. Either use an env file/variable or use a private git repository.                                     |
 | enabledRoots | array  | [see below](#31-enabledroots) | ❌       | Which roots should be synchronized by the plugin. You can see all [available roots here.](https://getkirby.com/docs/guide/configuration#custom-folder-setup__all-configurable-roots) |
 
 ### 3.1 enabledRoots
 
 To support different types of folder structures we use the `kirby()->roots()` function (hence the name of the option).
-The plugin supports synchronizing all kirby root paths.
-By default the plugin is configured to sync the `accounts` and `content` roots.
+The plugin supports synchronizing all Kirby root paths.
+By default, the plugin is configured to sync the `accounts` and `content` roots.
 
 ```php
 [
@@ -99,9 +99,9 @@ The plugin creates 2 endpoints (routes):
 1. `/contentsync/files`: Returns a list of all files in the enabled roots.
 2. `/contentsync/file/:fileId`: Returns the contents of the requested file.
 
-> If you don't set-up a token the endpoints won't work.
+> If you don't set up a token the endpoints won't work.
 
-Each file returned by `files` has an ID (sha1 hash of root name + path), a path (relative to kirby root), kirby root name and a checksum of the file contents.
+Each file returned by `files` has an ID (sha1 hash of root name + path), a path (relative to Kirby root), a Kirby root name, and a checksum of the file contents.
 
 The plugin compares the retrieved file list with a file list of local files. It automatically deletes local files that aren't in the server list, creates the ones that aren't local but in the server list, and updates the ones with different checksums.
 
