@@ -3,7 +3,7 @@
     "description": "Kirby contentsync plugin",
     "license": "MIT",
     "type": "kirby-plugin",
-    "version": "2.1.0",
+    "version": "2.1.1-beta",
     "authors": [
         {
             "name": "Marc Stampfli",
@@ -12,11 +12,11 @@
     ],
     "require": {
         "getkirby/composer-installer": "^1.2",
-        "getkirby/cli": "^1.1",
+        "getkirby/cli": "^1.1 || ^2.0",
         "php-curl-class/php-curl-class": "^9.19"
     },
     "require-dev": {
-        "getkirby/cms": "4.0-beta.2"
+        "getkirby/cms": "^4.0"
     },
     "autoload": {
         "psr-4": {
