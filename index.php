@@ -60,7 +60,7 @@ Kirby::plugin('zephir/contentsync', [
                     'noValue' => true
                 ]
             ],
-            'command' => function ($cli) : void {
+            'command' => function ($cli): void {
                 Logger::setCli($cli);
                 Logger::setLogLevel($cli->arg('verbose') ? 'verbose' : 'info');
 

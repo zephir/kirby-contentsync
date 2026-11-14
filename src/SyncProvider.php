@@ -32,7 +32,8 @@ class SyncProvider
     /**
      * @param bool $mode
      */
-    public function setNoninteractiveMode(bool $mode) {
+    public function setNoninteractiveMode(bool $mode)
+    {
         $this->noninteractive = $mode;
     }
 
@@ -63,8 +64,7 @@ class SyncProvider
             if ($deleteCount || $createCount || $updateCount) {
                 if ($this->noninteractive) {
                     Logger::info('Changes will be automatically adopted');
-                }
-                else {
+                } else {
                     Logger::getCli()->confirmToContinue('Do you want to continue?');
                 }
             }
@@ -130,7 +130,7 @@ class SyncProvider
         }
 
         if ($curl->httpStatusCode !== 200) {
-            throw new Exception('Server Error (' . $curl->httpStatusCode .  '): ' . isset($curl->response->message) ? $curl->response->message : $curl->response);
+            throw new Exception('Server Error (' . $curl->httpStatusCode . '): ' . isset($curl->response->message) ? $curl->response->message : $curl->response);
         }
 
         $files = new Files();
