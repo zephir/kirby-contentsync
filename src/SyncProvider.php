@@ -119,7 +119,10 @@ class SyncProvider
 
         $curl = new Curl();
         $curl->setHeader('Authorization', 'Bearer ' . option('zephir.contentsync.token'));
-        $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
+        if (option('zephir.contentsync.verifySSL') === false) {
+            $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
+            $curl->setOpt(CURLOPT_SSL_VERIFYHOST, 0);
+        }
         $curl->get($source . '/contentsync/files');
 
         if ($curl->error) {

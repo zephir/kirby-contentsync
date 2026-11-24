@@ -73,6 +73,7 @@ Kirby::plugin('zephir/contentsync', [
     'options' => [
         'source' => null,
         'token' => null,
+        'verifySSL' => true,
         'enabledRoots' => [
             'content' => true,
             'accounts' => true,

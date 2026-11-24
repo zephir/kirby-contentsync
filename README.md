@@ -56,6 +56,7 @@ After installation, you simply have to configure the [Options](#3-options), depl
 | source       | string | null                          | ✅       | Source of the content, normally the staging/prod server. URL of the host (e.g. https://getkirby.com)                                                                               |
 | token        | string | null                          | ✅       | The authentication token, make sure this token is not accessible by the public. Either use an env file/variable or use a private git repository.                                     |
 | enabledRoots | array  | [see below](#31-enabledroots) | ❌       | Which roots should be synchronized by the plugin. You can see all [available roots here.](https://getkirby.com/docs/guide/configuration#custom-folder-setup__all-configurable-roots) |
+| verifySSL    | bool   | true                          | ❌       | Verify the SSL certificate of the source server. Only set this to `false` for a source with a self-signed certificate you trust, as it exposes the token to man-in-the-middle attacks. |
 
 ### 3.1 enabledRoots
 
