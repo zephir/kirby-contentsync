@@ -2,10 +2,10 @@
 
 namespace Zephir\Contentsync;
 
-use Curl\Curl;
 use Kirby\CLI\CLI;
 use Kirby\Exception\Exception;
 use Zephir\Contentsync\Collections\Files;
+use Zephir\Contentsync\Helpers\Http;
 use Zephir\Contentsync\Helpers\Logger;
 
 class SyncProvider
@@ -123,28 +123,20 @@ class SyncProvider
 
         Logger::info("Fetching file list from " . $source);
 
-        $curl = new Curl();
-        $curl->setHeader('Authorization', 'Bearer ' . option('zephir.contentsync.token'));
-        if (option('zephir.contentsync.verifySSL') === false) {
-            $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
-            $curl->setOpt(CURLOPT_SSL_VERIFYHOST, 0);
-        }
-        $curl->get($source . '/contentsync/files');
+        $response = Http::get($source . '/contentsync/files');
 
-        if ($curl->error) {
-            throw new Exception('Server Error (' . $curl->httpStatusCode . '): ' . $curl->errorMessage);
+        if ($response['status'] !== 200) {
+            throw new Exception('Server Error (' . $response['status'] . '): ' . Http::errorMessage($response['body']));
         }
 
-        if (!is_array($curl->response)) {
-            throw new Exception('Malformed JSON response from server. HTTP-Code: ' . $curl->httpStatusCode . '. Response:' . (is_string($curl->response) ? $curl->response : json_encode($curl->response)));
-        }
+        $fileList = json_decode($response['body'], true);
 
-        if ($curl->httpStatusCode !== 200) {
-            throw new Exception('Server Error (' . $curl->httpStatusCode . '): ' . json_encode($curl->response));
+        if (!is_array($fileList)) {
+            throw new Exception('Malformed JSON response from server. HTTP-Code: ' . $response['status'] . '. Response: ' . $response['body']);
         }
 
         $files = new Files();
-        return $files->setFiles($curl->response);
+        return $files->setFiles($fileList);
     }
 
 }

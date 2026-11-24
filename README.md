@@ -110,7 +110,7 @@ Each file returned by `files` has an ID (sha1 hash of root name + path), a path 
 
 The plugin compares the retrieved file list with a file list of local files. It automatically deletes local files that aren't in the server list, creates the ones that aren't local but in the server list, and updates the ones with different checksums.
 
-It doesn't sync files that haven't changed. File paths from the server that would point outside a Kirby root are refused.
+It doesn't sync files that haven't changed. Each file is downloaded to a temporary file first, so a failed download leaves the local file untouched. File paths from the server that would point outside a Kirby root are refused.
 
 ## 6. Caveats
 

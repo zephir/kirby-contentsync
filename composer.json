@@ -11,9 +11,9 @@
         }
     ],
     "require": {
+        "ext-curl": "*",
         "getkirby/composer-installer": "^1.2",
-        "getkirby/cli": "^1.1 || ^2.0",
-        "php-curl-class/php-curl-class": "^12.0.1 || ^13.0"
+        "getkirby/cli": "^1.1 || ^2.0"
     },
     "require-dev": {
         "getkirby/cms": "^5.0"

@@ -2,11 +2,11 @@
 
 namespace Zephir\Contentsync\Models;
 
-use Curl\Curl;
 use Kirby\Exception\Exception;
 use Kirby\Filesystem\Dir;
 use Kirby\Filesystem\F;
 use Kirby\Toolkit\A;
+use Zephir\Contentsync\Helpers\Http;
 use Zephir\Contentsync\Helpers\Logger;
 
 class File
@@ -109,45 +109,53 @@ class File
     }
 
     /**
-     * @param string $content
+     * Downloads the file from the source server. The download goes to a
+     * temporary file first, so a failed download leaves the local file as it was.
+     *
      * @return void
+     * @throws Exception
      */
     public function update()
     {
         $source = rtrim(option('zephir.contentsync.source'), '/');
+        $absolutePath = $this->getAbsolutePath();
+        $tempPath = $absolutePath . '.contentsync-download';
 
         // Check if dir exists and create if not
-        Dir::make(F::dirname($this->getAbsolutePath()));
+        Dir::make(F::dirname($absolutePath));
 
-        Logger::verbose('File: ' . $this->getAbsolutePath());
+        Logger::verbose('File: ' . $absolutePath);
         Logger::verbose('File ID: ' . $this->id);
 
         $fileUrl = $source . '/contentsync/file/' . $this->id;
         Logger::verbose('Server URL: ' . $fileUrl);
 
-        $curl = new Curl();
-        $curl->setHeader('Authorization', 'Bearer ' . option('zephir.contentsync.token'));
-        if (option('zephir.contentsync.verifySSL') === false) {
-            $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
-            $curl->setOpt(CURLOPT_SSL_VERIFYHOST, 0);
+        $handle = fopen($tempPath, 'wb');
+
+        if ($handle === false) {
+            throw new Exception('Could not write to ' . $tempPath . '.');
         }
-        $curl->download(
-            $fileUrl,
-            $this->getAbsolutePath()
-        );
 
-        if ($curl->httpStatusCode !== 200) {
-            $response = json_decode(F::read($this->getAbsolutePath()));
-            $errorMessage = $curl->errorMessage;
+        try {
+            $response = Http::get($fileUrl, $handle);
+        } catch (\Throwable $e) {
+            fclose($handle);
+            F::remove($tempPath);
+            throw $e;
+        }
 
-            if (is_object($response)) {
-                $errorMessage = $response->message;
-            }
+        fclose($handle);
 
-            F::remove($this->getAbsolutePath());
-            Logger::verbose('Removing: ' . $this->getAbsolutePath());
+        if ($response['status'] !== 200) {
+            $errorMessage = Http::errorMessage((string)F::read($tempPath));
+            F::remove($tempPath);
 
-            throw new Exception('Server: ' . $errorMessage . '\n' . ' Tried to connect to: ' . $source . '/contentsync/file/' . $this->id);
+            throw new Exception('Server Error (' . $response['status'] . '): ' . $errorMessage . '\n' . ' Tried to connect to: ' . $fileUrl);
+        }
+
+        if (!rename($tempPath, $absolutePath)) {
+            F::remove($tempPath);
+            throw new Exception('Could not write to ' . $absolutePath . '.');
         }
     }
 
