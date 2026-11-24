@@ -10,10 +10,9 @@ use Kirby\Filesystem\F;
 use Zephir\Contentsync\Collections\Files;
 use \Zephir\Contentsync\Models\File;
 
-define("CHUNK_SIZE", 1024 * 1024);
-
 class FileProvider
 {
+    private const CHUNK_SIZE = 1024 * 1024;
 
     /**
      * @return Response
@@ -73,7 +72,7 @@ class FileProvider
         }
 
         while (!feof($handle)) {
-            $buffer = fread($handle, CHUNK_SIZE);
+            $buffer = fread($handle, self::CHUNK_SIZE);
             echo $buffer;
             flush();
         }
