@@ -2,6 +2,7 @@
 
 namespace Zephir\Contentsync\Collections;
 
+use Kirby\Exception\Exception;
 use Kirby\Toolkit\A;
 use Kirby\Filesystem\Dir;
 use Zephir\Contentsync\Helpers\Logger;
@@ -21,13 +22,38 @@ class Files
     public $allFilesCollected = false;
 
     /**
+     * Sets the files from a file list sent by the source server.
+     *
      * @param array $files
      * @return Files
+     * @throws Exception if an entry is malformed or points outside its root
      */
     public function setFiles(array $files)
     {
         $this->all = A::map($files, function ($file) {
-            return new File($file->kirbyRootName, $file->path, $file->checksum);
+            if (
+                !is_array($file) ||
+                !is_string($file['kirbyRootName'] ?? null) ||
+                !is_string($file['path'] ?? null) ||
+                !is_string($file['checksum'] ?? null)
+            ) {
+                throw new Exception('Malformed file entry in the file list from the server: ' . json_encode($file));
+            }
+
+            // The server decides which paths get written, so make sure
+            // none of them can reach outside a Kirby root
+            if (kirby()->root($file['kirbyRootName']) === null) {
+                throw new Exception('Unknown Kirby root in the file list from the server: ' . $file['kirbyRootName']);
+            }
+
+            if (
+                str_contains($file['path'], "\0") ||
+                in_array('..', preg_split('#[/\\\\]#', $file['path']) ?: [], true)
+            ) {
+                throw new Exception('Refusing to sync a file outside its Kirby root: ' . $file['path']);
+            }
+
+            return new File($file['kirbyRootName'], $file['path'], $file['checksum']);
         });
 
         return $this;
