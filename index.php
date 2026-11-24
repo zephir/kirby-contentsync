@@ -52,13 +52,20 @@ Kirby::plugin('zephir/contentsync', [
                     'longPrefix' => 'verbose',
                     'description' => 'Verbose output.',
                     'noValue' => true
+                ],
+                'noninteractive' => [
+                    'prefix' => 'n',
+                    'longPrefix' => 'noninteractive',
+                    'description' => 'Adopt changes automatically',
+                    'noValue' => true
                 ]
             ],
-            'command' => function ($cli) : void {
+            'command' => function ($cli): void {
                 Logger::setCli($cli);
                 Logger::setLogLevel($cli->arg('verbose') ? 'verbose' : 'info');
 
                 $syncProvider = new SyncProvider($cli);
+                $syncProvider->setNoninteractiveMode($cli->arg('noninteractive'));
                 $syncProvider->sync();
             }
         ]
@@ -66,6 +73,7 @@ Kirby::plugin('zephir/contentsync', [
     'options' => [
         'source' => null,
         'token' => null,
+        'verifySSL' => true,
         'enabledRoots' => [
             'content' => true,
             'accounts' => true,

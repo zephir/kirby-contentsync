@@ -127,6 +127,10 @@ class File
 
         $curl = new Curl();
         $curl->setHeader('Authorization', 'Bearer ' . option('zephir.contentsync.token'));
+        if (option('zephir.contentsync.verifySSL') === false) {
+            $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
+            $curl->setOpt(CURLOPT_SSL_VERIFYHOST, 0);
+        }
         $curl->download(
             $fileUrl,
             $this->getAbsolutePath()

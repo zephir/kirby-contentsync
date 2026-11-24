@@ -16,11 +16,25 @@ class SyncProvider
     private $cli;
 
     /**
+     * to enable the non-interactive mode to automatically accept changes
+     * @var bool $noninteractive
+     */
+    private bool $noninteractive = false;
+
+    /**
      * @param CLI $cli
      */
     public function __construct(CLI $cli)
     {
         $this->cli = $cli;
+    }
+
+    /**
+     * @param bool $mode
+     */
+    public function setNoninteractiveMode(bool $mode)
+    {
+        $this->noninteractive = $mode;
     }
 
     public function sync()
@@ -48,7 +62,11 @@ class SyncProvider
             Logger::br();
 
             if ($deleteCount || $createCount || $updateCount) {
-                Logger::getCli()->confirmToContinue('Do you want to continue?');
+                if ($this->noninteractive) {
+                    Logger::info('Changes will be automatically adopted');
+                } else {
+                    Logger::getCli()->confirmToContinue('Do you want to continue?');
+                }
             }
 
             // Remove deleted files
@@ -101,6 +119,10 @@ class SyncProvider
 
         $curl = new Curl();
         $curl->setHeader('Authorization', 'Bearer ' . option('zephir.contentsync.token'));
+        if (option('zephir.contentsync.verifySSL') === false) {
+            $curl->setOpt(CURLOPT_SSL_VERIFYPEER, false);
+            $curl->setOpt(CURLOPT_SSL_VERIFYHOST, 0);
+        }
         $curl->get($source . '/contentsync/files');
 
         if ($curl->error) {
@@ -112,7 +134,7 @@ class SyncProvider
         }
 
         if ($curl->httpStatusCode !== 200) {
-            throw new Exception('Server Error (' . $curl->httpStatusCode .  '): ' . isset($curl->response->message) ? $curl->response->message : $curl->response);
+            throw new Exception('Server Error (' . $curl->httpStatusCode . '): ' . isset($curl->response->message) ? $curl->response->message : $curl->response);
         }
 
         $files = new Files();
