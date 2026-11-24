@@ -136,11 +136,11 @@ class SyncProvider
         }
 
         if (!is_array($curl->response)) {
-            throw new Exception('Malformed JSON response from server. HTTP-Code: ' . $curl->httpStatusCode . '. Response:' . $curl->response);
+            throw new Exception('Malformed JSON response from server. HTTP-Code: ' . $curl->httpStatusCode . '. Response:' . (is_string($curl->response) ? $curl->response : json_encode($curl->response)));
         }
 
         if ($curl->httpStatusCode !== 200) {
-            throw new Exception('Server Error (' . $curl->httpStatusCode . '): ' . isset($curl->response->message) ? $curl->response->message : $curl->response);
+            throw new Exception('Server Error (' . $curl->httpStatusCode . '): ' . json_encode($curl->response));
         }
 
         $files = new Files();
