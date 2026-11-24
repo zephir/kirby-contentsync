@@ -3,7 +3,7 @@
     "description": "Kirby contentsync plugin",
     "license": "MIT",
     "type": "kirby-plugin",
-    "version": "2.1.2",
+    "version": "2.1.0",
     "authors": [
         {
             "name": "Marc Stampfli",
