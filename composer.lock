@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e93b1a9ea8475f0e8a89cfbf56c44fe2",
+    "content-hash": "406df4add0ad8ff02adf5d6c444ff48a",
     "packages": [
         {
             "name": "getkirby/cli",
@@ -519,21 +519,21 @@
         },
         {
             "name": "php-curl-class/php-curl-class",
-            "version": "9.19.2",
+            "version": "13.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-curl-class/php-curl-class.git",
-                "reference": "c41efeb4ea2dc3cf8f90f8f967b0fcf45a41e294"
+                "reference": "f6d59542d9d5285976869cd4e166438292c243e5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-curl-class/php-curl-class/zipball/c41efeb4ea2dc3cf8f90f8f967b0fcf45a41e294",
-                "reference": "c41efeb4ea2dc3cf8f90f8f967b0fcf45a41e294",
+                "url": "https://api.github.com/repos/php-curl-class/php-curl-class/zipball/f6d59542d9d5285976869cd4e166438292c243e5",
+                "reference": "f6d59542d9d5285976869cd4e166438292c243e5",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
-                "php": ">=7.0"
+                "php": ">=8.0"
             },
             "require-dev": {
                 "dealerdirect/phpcodesniffer-composer-installer": "*",
@@ -541,9 +541,9 @@
                 "friendsofphp/php-cs-fixer": "*",
                 "phpcompatibility/php-compatibility": "dev-develop",
                 "phpcsstandards/phpcsutils": "@alpha",
+                "phpstan/phpstan": "*",
                 "phpunit/phpunit": "*",
-                "squizlabs/php_codesniffer": "*",
-                "vimeo/psalm": ">=0.3.63"
+                "squizlabs/php_codesniffer": "*"
             },
             "suggest": {
                 "ext-mbstring": "*"
@@ -593,9 +593,10 @@
             ],
             "support": {
                 "issues": "https://github.com/php-curl-class/php-curl-class/issues",
-                "source": "https://github.com/php-curl-class/php-curl-class/tree/9.19.2"
+                "source": "https://github.com/php-curl-class/php-curl-class/tree/13.1.0"
             },
-            "time": "2024-04-09T18:03:13+00:00"
+            "time": "2026-11-17T17:08:18+00:00",
+            "published-time": "2026-11-17T17:08:24+00:00"
         },
         {
             "name": "psr/http-client",
