@@ -2,6 +2,12 @@
 
 ![cover](docs/content-sync.gif)
 
+> [!IMPORTANT]
+> **Looking for a maintainer:** we're looking for someone to take over this repository. If you're interested, please [open an issue](https://github.com/zephir/kirby-contentsync/issues).
+
+> [!NOTE]
+> Claude (an AI assistant) was used to optimize the code of this plugin. All changes were validated by a human.
+
 Tired of manual and cumbersome methods like git push/pull, scp, rsync, or sftp to synchronize content between your server and local development environment?<br />
 Embrace a seamless and efficient syncing solution with Contentsync.
 
