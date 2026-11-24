@@ -42,6 +42,12 @@ class SyncProvider
         Logger::info('Starting sync process.');
 
         try {
+            foreach (['source', 'token'] as $option) {
+                if (empty(option('zephir.contentsync.' . $option))) {
+                    throw new Exception("The option 'zephir.contentsync.{$option}' is not configured.");
+                }
+            }
+
             Logger::verbose('Collecting list of all local files.');
             $localFiles = new Files();
             $localFiles->collectFiles();
