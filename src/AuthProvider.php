@@ -24,17 +24,15 @@ class AuthProvider
         $headers = getallheaders();
 
         if (!isset($headers['Authorization'])) {
-            throw new Exception('Authorization header missing.');
+            throw new PermissionException('Authorization header missing.');
         }
 
         $token = substr($headers['Authorization'], 7);
 
         if ($validToken !== $token) {
-            throw new Exception([
-                'fallback' => 'Invalid token.',
-                'httpCode' => 403,
-                'translate' => false,
-            ]);
+            // A plain message works with every Kirby version: Kirby 6 no longer
+            // accepts an options array, and PermissionException defaults to 403
+            throw new PermissionException('Invalid token.');
         }
     }
 
