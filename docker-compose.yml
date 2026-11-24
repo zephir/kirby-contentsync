@@ -1,9 +1,9 @@
-version: '3'
-
 services:
   cs_server:
     build:
       context: ./docker
+      args:
+        KIRBY_VERSION: ${KIRBY_VERSION:-5.6.4}
     environment:
       - USERID=${UID}
     volumes:
@@ -17,6 +17,8 @@ services:
   cs_receiver:
     build:
       context: ./docker
+      args:
+        KIRBY_VERSION: ${KIRBY_VERSION:-5.6.4}
     environment:
       - USERID=${UID}
     volumes:

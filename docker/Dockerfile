@@ -1,5 +1,8 @@
-# Use latest offical ubuntu image
-FROM ubuntu:latest
+# Ubuntu 24.04 ships PHP 8.3, which runs Kirby 4, 5 and 6
+FROM ubuntu:24.04
+
+# Kirby version to test against, e.g. 4.9.8, 5.6.4 or 6.0.0-rc.3
+ARG KIRBY_VERSION=5.6.4
 
 # Add composer
 COPY --from=composer /usr/bin/composer /usr/bin/composer
@@ -38,10 +41,10 @@ COPY default.conf /etc/apache2/sites-available/000-default.conf
 # Remove default content (existing index.html)
 RUN rm /var/www/html/*
 
-# Clone the Kirby Starterkit
+# Clone the Kirby Starterkit (main branch) and the chosen Kirby version
 RUN git clone --depth 1 https://github.com/getkirby/starterkit.git /var/www/html
 RUN rm -rf /var/www/html/kirby
-RUN git clone --depth 1 --branch 4.0.0-beta.2 https://github.com/getkirby/kirby.git /var/www/html/kirby
+RUN git clone --depth 1 --branch ${KIRBY_VERSION} https://github.com/getkirby/kirby.git /var/www/html/kirby
 
 # Fix files and directories ownership
 RUN chown -R www-data:www-data /var/www/html/
