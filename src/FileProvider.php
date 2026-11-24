@@ -3,6 +3,7 @@
 namespace Zephir\Contentsync;
 
 use Kirby\Exception\Exception;
+use Kirby\Exception\NotFoundException;
 use Kirby\Http\Header;
 use Kirby\Http\Response;
 use Kirby\Filesystem\F;
@@ -38,7 +39,21 @@ class FileProvider
         $files = new Files();
         $file = $files->getFile($fileId);
 
-        ob_clean();
+        if ($file === null) {
+            throw new NotFoundException('File ' . $fileId . ' not found.');
+        }
+
+        // Drop anything buffered so far, so only the file contents are sent.
+        // There may be no buffer at all (output_buffering = 0), so don't
+        // call ob_clean() unconditionally. Stop at a buffer that can't be
+        // removed, or the loop would never end.
+        while (ob_get_level() > 0) {
+            if (!(ob_get_status()['flags'] & PHP_OUTPUT_HANDLER_REMOVABLE)) {
+                break;
+            }
+            ob_end_clean();
+        }
+
         self::returnFileStream($file);
     }
 
@@ -60,7 +75,6 @@ class FileProvider
         while (!feof($handle)) {
             $buffer = fread($handle, CHUNK_SIZE);
             echo $buffer;
-            ob_flush();
             flush();
         }
 
