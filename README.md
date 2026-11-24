@@ -104,7 +104,7 @@ The plugin creates 2 endpoints (routes):
 1. `/contentsync/files`: Returns a list of all files in the enabled roots.
 2. `/contentsync/file/:fileId`: Returns the contents of the requested file.
 
-> If you don't set up a token the endpoints won't work.
+> If you don't set up a token the endpoints won't work. Requests must send it as `Authorization: Bearer <token>`.
 
 Each file returned by `files` has an ID (sha1 hash of root name + path), a path (relative to Kirby root), a Kirby root name, and a checksum of the file contents.
 
