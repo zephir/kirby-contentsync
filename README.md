@@ -15,6 +15,7 @@ Embrace a seamless and efficient syncing solution with Contentsync.
     - [1.1 Composer](#11-composer)
     - [1.2 Download](#12-download)
     - [1.3 Git submodule](#13-git-submodule)
+    - [1.4 Kirby CLI](#14-kirby-cli)
   - [2. Setup](#2-setup)
   - [3. Options](#3-options)
     - [3.1 enabledRoots](#31-enabledroots)
@@ -43,6 +44,18 @@ Download and copy this repository to `/site/plugins/kirby-contentsync`.
 
 ```
 git submodule add https://github.com/zephir/kirby-contentsync.git site/plugins/kirby-contentsync
+```
+
+The plugin has no Composer dependencies, so all three ways work without running `composer install` for it.
+
+### 1.4 Kirby CLI
+
+The sync runs as a [Kirby CLI](https://github.com/getkirby/cli) command, so the machine you sync *to* needs the CLI. Install it globally or in your project:
+
+```
+composer global require getkirby/cli
+# or
+composer require getkirby/cli --dev
 ```
 
 ## 2. Setup

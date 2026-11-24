@@ -12,11 +12,14 @@
     ],
     "require": {
         "ext-curl": "*",
-        "getkirby/composer-installer": "^1.2",
-        "getkirby/cli": "^1.1 || ^2.0"
+        "getkirby/composer-installer": "^1.2"
     },
     "require-dev": {
+        "getkirby/cli": "^2.0",
         "getkirby/cms": "^5.0"
+    },
+    "suggest": {
+        "getkirby/cli": "Runs the content:sync command. Install it globally or in your project."
     },
     "autoload": {
         "psr-4": {

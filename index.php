@@ -1,15 +1,24 @@
 <?php
 
-# Use @include_once in case plugin is not installed through zip
-# see https://getkirby.com/docs/guide/plugins/plugin-setup-composer#support-for-plugin-installation-without-composer
-@include_once __DIR__ . '/vendor/autoload.php';
-
 use Kirby\Exception\Exception;
 use Kirby\Http\Response;
 use Zephir\Contentsync\AuthProvider;
 use Zephir\Contentsync\FileProvider;
 use Zephir\Contentsync\Helpers\Logger;
 use Zephir\Contentsync\SyncProvider;
+
+// Kirby's class loader, so the plugin also works when it was
+// installed without Composer (download or git submodule)
+load([
+    'Zephir\\Contentsync\\AuthProvider' => 'src/AuthProvider.php',
+    'Zephir\\Contentsync\\FileProvider' => 'src/FileProvider.php',
+    'Zephir\\Contentsync\\SyncProvider' => 'src/SyncProvider.php',
+    'Zephir\\Contentsync\\Collections\\Files' => 'src/Collections/Files.php',
+    'Zephir\\Contentsync\\Helpers\\Http' => 'src/Helpers/Http.php',
+    'Zephir\\Contentsync\\Helpers\\Logger' => 'src/Helpers/Logger.php',
+    'Zephir\\Contentsync\\Helpers\\Roots' => 'src/Helpers/Roots.php',
+    'Zephir\\Contentsync\\Models\\File' => 'src/Models/File.php',
+], __DIR__);
 
 Kirby::plugin('zephir/contentsync', [
     'routes' => function ($kirby) {
