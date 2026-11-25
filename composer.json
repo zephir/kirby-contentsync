@@ -17,7 +17,7 @@
     },
     "require-dev": {
         "getkirby/cli": "^2.0",
-        "getkirby/cms": "^5.0"
+        "getkirby/cms": "^4.0 || ^5.0 || ^6.0"
     },
     "suggest": {
         "getkirby/cli": "Runs the content:sync command. Install it globally or in your project."
@@ -25,6 +25,11 @@
     "autoload": {
         "psr-4": {
             "Zephir\\Contentsync\\": "src/"
+        }
+    },
+    "extra": {
+        "kirby": {
+            "compatible": "^4.0 || ^5.0 || ^6.0"
         }
     },
     "config": {
